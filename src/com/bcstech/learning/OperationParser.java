@@ -3,7 +3,7 @@ package com.bcstech.learning;
 import java.util.Stack;
 
 /**
- * @ClassName OperationParser
+ * @ClassName OperationParser：这个是常规实现，还有一种是逆波兰式，下次再写。
  * @Description 用于解析计算数学表达式:1-2+(3+2)*3+4*6*(5+8*2*3+1)/2=?
  * @Author zhangcq
  * @Date 2022/10/11
