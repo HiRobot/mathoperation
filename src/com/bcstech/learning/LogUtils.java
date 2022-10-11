@@ -2,6 +2,12 @@ package com.bcstech.learning;
 
 import java.io.PrintStream;
 
+/**
+ * @ClassName LogUtils
+ * @Description 日志工具类
+ * @Author zhangcq
+ * @Date 2022/10/11
+ */
 public class LogUtils {
 
     public static void log( String msg, String ...args ) {

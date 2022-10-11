@@ -1,5 +1,11 @@
 package com.bcstech.learning;
 
+/**
+ * @ClassdName ItemInfo
+ * @Description 表达式单元
+ * @Author zhangcq
+ * @Date 2022/10/11
+ */
 public class ItemInfo {
     private ItemType type;          // 单一类型
     private String content;         // 单一内容
