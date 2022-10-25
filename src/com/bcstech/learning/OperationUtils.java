@@ -65,5 +65,118 @@ public class OperationUtils {
     public static boolean blankCharOrNot( char ch ) {
         return  ch ==' ' || ch == '\t' ? true : false;
     }
+
+    /**
+     * @MethodName nextItem
+     * @Description 解析下一个符号
+     * @Author zhangcq
+     * @Date 2022/10/11
+     * @param exprChars
+     * @param startIndex
+     * @return com.bcstech.learning.ItemInfo
+     */
+    public static ItemInfo nextItem( char[] exprChars, int startIndex ) {
+
+        ItemInfo item = new ItemInfo();
+
+        //操作符
+        if( ! OperationUtils.numberOrNot(exprChars[startIndex]) ) {
+            item.setType( ItemType.OPERATION );
+            item.setContent( exprChars[startIndex]+"");
+            item.setNextIndex(++startIndex);
+
+            LogUtils.log("item:"+item.getContent() );
+            return item;
+        }
+
+        //数字
+        item.setType( ItemType.NUMBER );
+        StringBuilder sbuilder = new StringBuilder();
+        for ( int i = startIndex; i < exprChars.length; ++i ) {
+            if( ! OperationUtils.numberOrNot(exprChars[i]) ) {
+                item.setNextIndex(i);
+                break;
+            }
+
+            sbuilder.append(exprChars[i]);
+        }
+        item.setContent( sbuilder.toString() );
+
+        LogUtils.log("item:"+item.getContent() );
+        return item;
+    }
+
+    public static ItemInfo nextItem( String expr, int startIndex ) {
+
+        ItemInfo item = new ItemInfo();
+
+        //操作符
+        char ch = expr.charAt(startIndex);
+        if( !OperationUtils.numberOrNot(ch) ) {
+            item.setType( ItemType.OPERATION );
+            item.setContent( ch+"");
+            item.setNextIndex(++startIndex);
+
+            LogUtils.log("item:"+item.getContent() );
+            return item;
+        }
+
+        //数字
+        int myStartIndex = startIndex;
+        item.setType( ItemType.NUMBER );
+        StringBuilder sbuilder = new StringBuilder();
+        for ( int i = startIndex; i < expr.length(); ++i ) {
+
+            myStartIndex = i;
+
+            char chTemp = expr.charAt(i);
+            if( ! OperationUtils.numberOrNot(chTemp) ) {
+                break;
+            }
+
+            sbuilder.append(chTemp);
+        }
+        item.setNextIndex(myStartIndex);
+        item.setContent( sbuilder.toString() );
+
+        LogUtils.log("item:"+item.getContent() );
+        return item;
+    }
+
+    public static SimpleExprInfo findSimpleExr( String expr, int startIndex )
+    {
+        StringBuilder maySimple = new StringBuilder();
+        SimpleExprInfo seInfo = new SimpleExprInfo();
+        int endIndex = expr.length();
+        int bracketCnt = 1;     //0 表示找到了对应的)括号。
+
+        for ( int i = startIndex; i < endIndex; ++i )
+        {
+            char ch = expr.charAt(i);
+            if ( '('  == ch ) {
+                bracketCnt = ++bracketCnt;
+            }
+            else if ( ')' == ch ) {
+                bracketCnt = --bracketCnt;
+            }
+
+            if ( bracketCnt == 0 ) {
+                seInfo.startIndex = i + 1;
+                seInfo.simpleExpr = maySimple.toString();
+                return seInfo;
+            }
+
+            maySimple.append(ch);
+        }
+
+        throw  new RuntimeException("括号不匹配,expr="+expr+" startIndex is "+startIndex);
+    }
+
+    public static void main( String args[] ) {
+//        String expr = "1*(1+(2+3))+1";
+        String expr = "10+5*20*(5+9*17)+2=";
+        SimpleExprInfo se = findSimpleExr(expr,9);
+        LogUtils.log(se.toString()," charAt is "+expr.charAt(se.startIndex));
+    }
 }
 

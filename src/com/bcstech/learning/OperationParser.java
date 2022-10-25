@@ -64,7 +64,7 @@ public class OperationParser {
             }
 
             // 解析符号
-            ItemInfo item = nextItem(exprChars, startIndex);
+            ItemInfo item = OperationUtils.nextItem(exprChars, startIndex);
 
             // 默认下一个位置
             startIndex = item.getNextIndex();
@@ -81,7 +81,7 @@ public class OperationParser {
             if ( OperationUtils.equalsAnyOf(oper, "*", "/")) {
 
                 // 获取下一个计算数
-                ItemInfo itemNext = nextItem(exprChars, item.getNextIndex());
+                ItemInfo itemNext = OperationUtils.nextItem(exprChars, item.getNextIndex());
 
                 // 如果下一个是（则优先计算括号内的表达式，将本次入栈。
                 if ( OperationUtils.equalsAnyOf(itemNext.getContent(), "(")) {
@@ -205,45 +205,5 @@ public class OperationParser {
         }
 
         return null;
-    }
-
-    /**
-     * @MethodName nextItem
-     * @Description 解析下一个符号
-     * @Author zhangcq
-     * @Date 2022/10/11
-     * @param exprChars
-     * @param startIndex
-     * @return com.bcstech.learning.ItemInfo
-     */
-    public static ItemInfo nextItem( char[] exprChars, int startIndex ) {
-
-        ItemInfo item = new ItemInfo();
-
-        //操作符
-        if( ! OperationUtils.numberOrNot(exprChars[startIndex]) ) {
-            item.setType( ItemType.OPERATION );
-            item.setContent( exprChars[startIndex]+"");
-            item.setNextIndex(++startIndex);
-
-            LogUtils.log("item:"+item.getContent() );
-            return item;
-        }
-
-        //数字
-        item.setType( ItemType.NUMBER );
-        StringBuilder sbuilder = new StringBuilder();
-        for ( int i = startIndex; i < exprChars.length; ++i ) {
-            if( ! OperationUtils.numberOrNot(exprChars[i]) ) {
-                item.setNextIndex(i);
-                break;
-            }
-
-            sbuilder.append(exprChars[i]);
-        }
-        item.setContent( sbuilder.toString() );
-
-        LogUtils.log("item:"+item.getContent() );
-        return item;
     }
 }

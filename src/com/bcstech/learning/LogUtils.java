@@ -32,4 +32,10 @@ public class LogUtils {
 
         stream.println("["+sbuilder.toString()+"]");
     }
+
+    public static void main( String args[] ) {
+        int i = 0;
+        i = i++;
+        log("i",i+"");
+    }
 }
