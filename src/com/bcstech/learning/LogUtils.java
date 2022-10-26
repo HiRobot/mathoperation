@@ -10,7 +10,17 @@ import java.io.PrintStream;
  */
 public class LogUtils {
 
+    private static boolean debug;
+
+    public static void flog( String msg, String ...args ) {
+        print( msg, System.out, args );
+    }
+
     public static void log( String msg, String ...args ) {
+        if ( !debug ) {
+            return;
+        }
+
         print( msg, System.out, args );
     }
 

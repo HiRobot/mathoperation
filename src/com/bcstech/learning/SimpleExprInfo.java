@@ -9,10 +9,10 @@ package com.bcstech.learning;
 public class SimpleExprInfo {
     public String srcExpr;          // 原表达式
     public String simpleExpr;       // 简单表达式
-    public int startIndex;          // 原表达式开始位置（不包含括号).
+    public int nextIndex;          // 原表达式开始位置（不包含括号).
 
     @Override
     public String toString() {
-        return "simpleExpr="+simpleExpr+",startIndex="+startIndex;
+        return "simpleExpr="+simpleExpr+",startIndex="+nextIndex;
     }
 }

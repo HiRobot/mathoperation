@@ -8,63 +8,28 @@ import java.util.Stack;
  * @Author zhangcq
  * @Date 2022/10/11
  **/
-public class OperationParser {
-    private String mathExpr;
-    private int exprLength;
+public class OperationMath extends SimpleMath {
 
-    private int nextIndex;
-    private Stack<ItemInfo> itemStack;
-
-    private double cmpResult = 1-2+((31+21*4)*3+4)*6*(5+8*2*3+1)/2;
-
-    public static void main( String args[] ) {
-        String expr = "1-2+((31+21*4)*3+4)*6*(5+8*2*3+1)/2=";
-        new OperationParser( expr ).parse();
-    }
-    
-    public OperationParser( String expr ) {
-        mathExpr = expr.replaceAll(" ","");
-        exprLength = mathExpr.length();
-
-        nextIndex = 0;
-        itemStack = new Stack<ItemInfo>();
-    }
-    
-
-    /**
-     * @MethodName parse
-     * @Description TODO       
-     * @Author zhangcq
-     * @Date 2022/10/11  
-     */
-    public void parse() {
-        parse( mathExpr.toCharArray(), nextIndex );
+    public OperationMath( String expr ) {
+        super(expr);
     }
 
     /**
      * @MethodName parse
      * @Description TODO       
      * @Author zhangcq
-     * @Date 2022/10/11 
-     * @param exprChars
-     * @param startIndex
+     * @Date 2022/10/11
      */
-    public void parse( char[] exprChars, int startIndex ) {
+    @Override
+    public double compute() {
 
         while ( true ) {
-            if ( OperationUtils.endOrNot(exprChars[startIndex])) {
-                if ( itemStack.size() >=3 ) {
-                    popAndMath();
-//                    LogUtils.log("itemStackSize", itemStack.size()+"");
-                    LogUtils.log("计算结果1", mathExpr+itemStack.pop().getContent());
-                    LogUtils.log("计算结果2", cmpResult+"");
-                }
-
-                return;
+            if ( startIndex > exprLength - 1 || OperationUtils.endOrNot(mathExpr.charAt(startIndex))) {
+                return this.finalResult();
             }
 
             // 解析符号
-            ItemInfo item = OperationUtils.nextItem(exprChars, startIndex);
+            ItemInfo item = OperationUtils.nextItem(mathExpr, startIndex);
 
             // 默认下一个位置
             startIndex = item.getNextIndex();
@@ -81,7 +46,7 @@ public class OperationParser {
             if ( OperationUtils.equalsAnyOf(oper, "*", "/")) {
 
                 // 获取下一个计算数
-                ItemInfo itemNext = OperationUtils.nextItem(exprChars, item.getNextIndex());
+                ItemInfo itemNext = OperationUtils.nextItem(mathExpr, item.getNextIndex());
 
                 // 如果下一个是（则优先计算括号内的表达式，将本次入栈。
                 if ( OperationUtils.equalsAnyOf(itemNext.getContent(), "(")) {
@@ -94,7 +59,7 @@ public class OperationParser {
                 if (maybeNumber.getType() != ItemType.NUMBER
                         || itemNext.getType() != ItemType.NUMBER) {
                     LogUtils.logerr("表达式不正确位置：" + maybeNumber.getContent(), oper, itemNext.getContent());
-                    return;
+                    throw new RuntimeException("表达式错误");
                 }
 
                 // 计算
@@ -146,7 +111,7 @@ public class OperationParser {
                 if ( !braketItem.getContent().equals("(") ) {
                     OperationUtils.printStack( itemStack );
                     LogUtils.logerr("括号计算错误。"+braketItem.getContent());
-                    return;
+                    throw new RuntimeException("表达式错误");
                 }
 
                 itemStack.push(sumItem);
@@ -162,28 +127,6 @@ public class OperationParser {
                 }
             }
         }
-    }
-    
-    /**
-     * @MethodName popAndMath
-     * @Description 弹出栈并进行运算，将结果压入栈。
-     * @Author zhangcq
-     * @Date 2022/10/11  
-     * @return double
-     */
-    public double popAndMath()
-    {
-        ItemInfo topInfo2 = itemStack.pop();
-        ItemInfo topOper = itemStack.pop();
-        ItemInfo topInfo1 = itemStack.pop();
-
-        LogUtils.log("POP&Math", topInfo1.getContent(),  topOper.getContent(), topInfo2.getContent() );
-        double result =  OperationUtils.math(topInfo1.getContent(), topInfo2.getContent(), topOper.getContent());
-
-        // 将上次结果入栈
-        itemStack.push(new ItemInfo(result + "", ItemType.NUMBER));
-
-        return result;
     }
 
     /**
